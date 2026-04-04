@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext';
 
 export default function TaskSidebar({ onAddTask }: { onAddTask: () => void }) {
-  const { tasks, toggleTaskCompletion, getIsCompleted, deleteTask } = useTasks();
+  const { tasks, toggleTaskCompletion, getIsCompleted, deleteTask, clearAllCompletions } = useTasks();
   const [now, setNow] = useState<Date | null>(null);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
 
@@ -17,53 +17,77 @@ export default function TaskSidebar({ onAddTask }: { onAddTask: () => void }) {
     return () => clearInterval(timer);
   }, []);
 
-  // Determine "active" task based on current time if not explicitly set
-  // This makes the UI feel alive and automatic
+  // Determine "active" task based on current time
   const isTimeInRange = (startStr: string, endStr: string) => {
     if (!now) return false;
     const [sH, sM] = startStr.split(':').map(Number);
     const [eH, eM] = endStr.split(':').map(Number);
     const currentH = now.getHours();
     const currentM = now.getMinutes();
-    
     const startTime = sH * 60 + sM;
     const endTime = eH * 60 + eM;
     const currentTime = currentH * 60 + currentM;
-    
     return currentTime >= startTime && currentTime < endTime;
   };
-
-  const completedTasks = tasks.filter(t => getIsCompleted(t.id));
-  const remainingTasks = tasks.filter(t => !getIsCompleted(t.id));
-  
-  // Find which task is currently "Active" based on time
-  const activeTask = remainingTasks.find(t => isTimeInRange(t.startTime, t.endTime));
-  const pendingTasks = remainingTasks.filter(t => t.id !== activeTask?.id);
 
   const getRemainingTime = (endTimeStr: string) => {
     if (!now) return '--:--:--';
     const [hours, minutes] = endTimeStr.split(':').map(Number);
     const end = new Date(now);
     end.setHours(hours, minutes, 0, 0);
-    
     const diff = end.getTime() - now.getTime();
     if (diff <= 0) return '00:00:00';
-    
     const h = Math.floor(diff / (1000 * 60 * 60));
     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const s = Math.floor((diff % (1000 * 60)) / 1000);
-    
     if (h > 0) return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
   };
 
+  const completedTasks = tasks.filter(t => getIsCompleted(t.id));
+  const remainingTasks = tasks.filter(t => !getIsCompleted(t.id));
+  const progress = tasks.length > 0 ? (completedTasks.length / tasks.length) * 100 : 0;
+  
+  // Find which task is currently "Active" based on time
+  const activeTask = remainingTasks.find(t => isTimeInRange(t.startTime, t.endTime));
+  const pendingTasks = remainingTasks.filter(t => t.id !== activeTask?.id);
+
   return (
     <section className="w-full lg:w-[26rem] h-auto lg:h-full glass-celestial border-t lg:border-t-0 lg:border-l border-outline-variant p-6 lg:p-8 overflow-y-auto z-10 flex flex-col relative shadow-celestial">
-      <div className="flex items-center justify-between mb-10 shrink-0">
-        <h3 className="text-headline-md text-on-surface tracking-tight">Daily Orbit</h3>
-        <button className="text-on-surface-variant hover:text-primary transition-colors">
-          <span className="material-symbols-outlined">filter_list</span>
-        </button>
+      <div className="flex flex-col mb-10 shrink-0">
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="text-headline-md text-on-surface tracking-tight">Daily Orbit</h3>
+          <div className="flex items-center space-x-2">
+             <button 
+              onClick={() => {
+                if(confirm("Reset all progress for today? Definitions will remain.")) {
+                  clearAllCompletions();
+                }
+              }}
+              title="Reset Today's Progress"
+              className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/5 text-on-surface-variant transition-colors"
+            >
+              <span className="material-symbols-outlined text-[20px]">restart_alt</span>
+            </button>
+            <button className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/5 text-on-surface-variant transition-colors">
+              <span className="material-symbols-outlined text-[20px]">filter_list</span>
+            </button>
+          </div>
+        </div>
+        
+        {/* Progress Metric */}
+        <div className="p-5 rounded-2xl bg-surface-container-low border border-white/5">
+          <div className="flex justify-between items-end mb-3">
+            <span className="text-label-md-caps text-on-surface-variant">Celestial Progress</span>
+            <span className="text-xl font-headline text-primary">{completedTasks.length} <small className="text-xs text-on-surface-variant opacity-60">/ {tasks.length} ARCS</small></span>
+          </div>
+          <div className="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+            <div 
+              className="h-full metallic-silver-gradient shadow-silver-glow transition-all duration-1000 ease-out"
+              style={{ width: `${progress}%` }}
+            ></div>
+          </div>
+        </div>
       </div>
       
       <div className="space-y-6 flex-grow overflow-y-auto pr-2 pb-24">

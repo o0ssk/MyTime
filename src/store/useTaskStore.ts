@@ -16,6 +16,7 @@ interface TaskStore extends TaskState {
   toggleTaskCompletion: (taskId: string, date: string) => void;
   getTaskCompletion: (taskId: string, date: string) => TaskCompletion | undefined;
   resetCompletionsForDate: (date: string) => void;
+  clearAllCompletions: () => void;
 }
 
 const TASK_COLORS = [
@@ -113,6 +114,10 @@ export const useTaskStore = create<TaskStore>()(
         set((state) => ({
           completions: state.completions.filter((c) => c.date !== date)
         }));
+      },
+      
+      clearAllCompletions: () => {
+        set({ completions: [] });
       }
     }),
     {

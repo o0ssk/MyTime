@@ -37,43 +37,37 @@ export default function Clock3D() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none p-4">
-        <div className="relative w-full h-full max-w-[min(90vw,900px)] aspect-square pointer-events-auto" />
-      </div>
-    );
-  }
-
   return (
     <div className="absolute inset-0 w-full h-full flex items-center justify-center pointer-events-none p-4">
       <div className="relative w-full h-full max-w-[min(90vw,900px)] aspect-square pointer-events-auto">
-        <Canvas
-          shadows
-          camera={{
-            position: [0, 4, 12],
-            fov: fov,
-            near: 0.1,
-            far: 100,
-          }}
-          gl={{
-            antialias: true,
-            alpha: true,
-            stencil: false,
-            depth: true,
-            toneMapping: 3, // ACESFilmicToneMapping
-            toneMappingExposure: 1.5,
-          }}
-          dpr={[1, 2]}
-          onCreated={({ gl, camera }) => {
-            gl.setClearAlpha(0);
-            camera.lookAt(0, 0, 0);
-          }}
-        >
-          <Suspense fallback={<LoadingFallback />}>
-            <ClockScene />
-          </Suspense>
-        </Canvas>
+        {mounted && (
+          <Canvas
+            shadows
+            camera={{
+              position: [0, 4, 12],
+              fov: fov,
+              near: 0.1,
+              far: 100,
+            }}
+            gl={{
+              antialias: true,
+              alpha: true,
+              stencil: false,
+              depth: true,
+              toneMapping: 3, // ACESFilmicToneMapping
+              toneMappingExposure: 1.5,
+            }}
+            dpr={[1, 2]}
+            onCreated={({ gl, camera }) => {
+              gl.setClearAlpha(0);
+              camera.lookAt(0, 0, 0);
+            }}
+          >
+            <Suspense fallback={<LoadingFallback />}>
+              <ClockScene />
+            </Suspense>
+          </Canvas>
+        )}
       </div>
     </div>
   );

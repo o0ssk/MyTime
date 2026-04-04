@@ -10,6 +10,7 @@ interface TaskContextType {
   toggleTaskCompletion: (id: string) => void;
   getIsCompleted: (id: string) => boolean;
   deleteTask: (id: string) => void;
+  clearAllCompletions: () => void;
   hoveredTaskId: string | null;
   setHoveredTaskId: (id: string | null) => void;
 }
@@ -56,6 +57,7 @@ export function TaskProvider({ children }: { children: React.ReactNode }) {
       toggleTaskCompletion,
       getIsCompleted,
       deleteTask: store.deleteTask,
+      clearAllCompletions: store.clearAllCompletions,
       hoveredTaskId,
       setHoveredTaskId
     }}>
