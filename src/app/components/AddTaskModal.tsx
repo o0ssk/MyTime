@@ -67,14 +67,14 @@ export default function AddTaskModal({ isOpen, onClose }: { isOpen: boolean; onC
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-background/60 backdrop-blur-md animate-in fade-in duration-300">
-      <div className="glass-celestial border border-outline-variant rounded-[40px] w-full max-w-4xl shadow-celestial relative flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6 bg-background/60 backdrop-blur-md animate-in fade-in duration-300">
+      <div className="glass-celestial border border-outline-variant rounded-[32px] md:rounded-[40px] w-full max-w-4xl shadow-celestial relative flex flex-col md:flex-row overflow-hidden max-h-[95vh] md:max-h-[90vh]">
         
         {/* Left Side: Visualizer */}
-        <div className="w-full md:w-1/2 p-12 flex flex-col items-center justify-center bg-surface-dim/40 relative">
-          <div className="relative w-64 h-64 mb-8">
+        <div className="w-full md:w-1/2 p-6 md:p-12 flex flex-col items-center justify-center bg-surface-dim/40 relative min-h-[300px] md:min-h-auto shrink-0">
+          <div className="relative w-48 h-48 md:w-64 md:h-64 mb-6 md:mb-8 transition-all duration-500">
             {/* Background Ring */}
-            <svg className="w-full h-full transform -rotate-0">
+            <svg className="w-full h-full transform -rotate-0" viewBox="0 0 256 256">
               <circle
                 cx="128"
                 cy="128"
@@ -103,86 +103,86 @@ export default function AddTaskModal({ isOpen, onClose }: { isOpen: boolean; onC
             
             {/* Time Labels */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-label-md-caps text-on-surface-variant mb-1">Total Duration</span>
-              <span className="text-4xl font-headline text-on-surface tracking-tighter">
-                {Math.abs(durationArc.end - durationArc.start) / 15} <small className="text-lg opacity-50">hrs</small>
+              <span className="text-[10px] md:text-label-md-caps text-on-surface-variant mb-1">Duration</span>
+              <span className="text-2xl md:text-4xl font-headline text-on-surface tracking-tighter">
+                {Math.abs(durationArc.end - durationArc.start) / 15} <small className="text-sm md:text-lg opacity-50">hrs</small>
               </span>
             </div>
 
             {/* Pivot Hand (Decorative) */}
-            <div className="absolute top-1/2 left-1/2 w-32 h-[1px] bg-primary/20 -translate-y-1/2 origin-left" style={{ transform: `rotate(${durationArc.start - 90}deg)` }}></div>
-            <div className="absolute top-1/2 left-1/2 w-32 h-[1px] bg-primary/20 -translate-y-1/2 origin-left" style={{ transform: `rotate(${durationArc.end - 90}deg)` }}></div>
+            <div className="absolute top-1/2 left-1/2 w-24 md:w-32 h-[1px] bg-primary/20 -translate-y-1/2 origin-left" style={{ transform: `rotate(${durationArc.start - 90}deg)` }}></div>
+            <div className="absolute top-1/2 left-1/2 w-24 md:w-32 h-[1px] bg-primary/20 -translate-y-1/2 origin-left" style={{ transform: `rotate(${durationArc.end - 90}deg)` }}></div>
           </div>
           
-          <div className="text-center space-y-2">
-            <h3 className="text-headline-sm text-on-surface">Temporal Alignment</h3>
-            <p className="text-body-md text-on-surface-variant max-w-[240px]">Define the celestial period for your upcoming endeavor.</p>
+          <div className="text-center space-y-1 md:space-y-2">
+            <h3 className="text-lg md:text-headline-sm text-on-surface">Temporal Alignment</h3>
+            <p className="text-xs md:text-body-md text-on-surface-variant max-w-[200px] md:max-w-[240px]">Define the celestial period for your upcoming endeavor.</p>
           </div>
         </div>
 
         {/* Right Side: Inputs */}
-        <div className="w-full md:w-1/2 p-12 bg-surface flex flex-col justify-center relative">
-          <button onClick={onClose} className="absolute top-8 right-8 text-on-surface-variant hover:text-on-surface transition-colors w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-all">
-            <span className="material-symbols-outlined">close</span>
+        <div className="w-full md:w-1/2 p-6 md:p-12 bg-surface flex flex-col justify-center relative overflow-y-auto">
+          <button onClick={onClose} className="absolute top-4 right-4 md:top-8 md:right-8 text-on-surface-variant hover:text-on-surface transition-colors w-12 h-12 md:w-10 md:h-10 flex items-center justify-center rounded-full hover:bg-surface-container transition-all z-10">
+            <span className="material-symbols-outlined text-[24px]">close</span>
           </button>
 
-          <h2 className="text-headline-md text-on-surface mb-10 tracking-tight leading-none">New Task Arc</h2>
+          <h2 className="text-2xl md:text-headline-md text-on-surface mb-6 md:mb-10 tracking-tight leading-none mt-2">New Task Arc</h2>
           
-          <form onSubmit={handleSubmit} className="space-y-8">
+          <form onSubmit={handleSubmit} className="space-y-6 md:space-y-8">
             <div className="space-y-2">
-              <label className="text-label-md-caps text-primary block">Objective Name</label>
+              <label className="text-[10px] md:text-label-md-caps text-primary block">Objective Name</label>
               <input 
                 required
                 type="text" 
                 value={title}
                 onChange={e => setTitle(e.target.value)}
-                className="w-full bg-transparent border-b border-outline-variant py-4 text-on-surface focus:outline-none focus:border-primary transition-all text-xl font-body"
+                className="w-full bg-transparent border-b border-outline-variant py-2 md:py-4 text-on-surface focus:outline-none focus:border-primary transition-all text-lg md:text-xl font-body"
                 placeholder="Ex. Architectural Reverie"
               />
             </div>
 
             <div className="space-y-2">
-              <label className="text-label-md-caps text-primary block">Expansion</label>
+              <label className="text-[10px] md:text-label-md-caps text-primary block">Expansion</label>
               <textarea 
                 value={description}
                 onChange={e => setDescription(e.target.value)}
-                className="w-full bg-transparent border-b border-outline-variant py-4 text-on-surface-variant focus:outline-none focus:border-primary transition-all resize-none h-20 font-body text-base"
+                className="w-full bg-transparent border-b border-outline-variant py-2 md:py-4 text-on-surface-variant focus:outline-none focus:border-primary transition-all resize-none h-12 md:h-20 font-body text-sm md:text-base"
                 placeholder="Detail the atmospheric parameters..."
               />
             </div>
 
-            <div className="flex space-x-8">
+            <div className="flex space-x-4 md:space-x-8">
               <div className="flex-1 space-y-2">
-                <label className="text-label-md-caps text-primary block">Genesis</label>
+                <label className="text-[10px] md:text-label-md-caps text-primary block">Genesis</label>
                 <input 
                   required
                   type="time" 
                   value={startTime}
                   onChange={e => setStartTime(e.target.value)}
-                  className="w-full bg-surface-container-high/40 rounded-2xl px-5 py-4 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all [color-scheme:dark] font-mono text-lg"
+                  className="w-full bg-surface-container-high/40 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all [color-scheme:dark] font-mono text-base md:text-lg"
                 />
               </div>
               <div className="flex-1 space-y-2">
-                <label className="text-label-md-caps text-primary block">Culmination</label>
+                <label className="text-[10px] md:text-label-md-caps text-primary block">Culmination</label>
                 <input 
                   required
                   type="time" 
                   value={endTime}
                   onChange={e => setEndTime(e.target.value)}
-                  className="w-full bg-surface-container-high/40 rounded-2xl px-5 py-4 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all [color-scheme:dark] font-mono text-lg"
+                  className="w-full bg-surface-container-high/40 rounded-xl md:rounded-2xl px-4 py-3 md:px-5 md:py-4 text-on-surface focus:outline-none focus:ring-1 focus:ring-primary transition-all [color-scheme:dark] font-mono text-base md:text-lg"
                 />
               </div>
             </div>
 
-            <div className="space-y-4">
-              <label className="text-label-md-caps text-primary block">Aura Spectrum</label>
-              <div className="flex flex-wrap gap-4">
+            <div className="space-y-3 md:space-y-4">
+              <label className="text-[10px] md:text-label-md-caps text-primary block">Aura Spectrum</label>
+              <div className="flex flex-wrap gap-3 md:gap-4">
                 {PRESET_COLORS.map((c) => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => setColor(c.value)}
-                    className={`group relative w-12 h-12 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 ${color === c.value ? 'ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
+                    className={`group relative w-10 h-10 md:w-12 md:h-12 rounded-full transition-all duration-300 hover:scale-110 active:scale-95 ${color === c.value ? 'ring-2 ring-primary ring-offset-4 ring-offset-surface' : ''}`}
                     style={{ backgroundColor: c.value }}
                   >
                     <span className="absolute -top-10 left-1/2 -translate-x-1/2 bg-surface-container text-on-surface text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap border border-outline-variant">
@@ -193,9 +193,11 @@ export default function AddTaskModal({ isOpen, onClose }: { isOpen: boolean; onC
               </div>
             </div>
 
-            <button type="submit" className="w-full metallic-silver-gradient text-on-primary font-bold py-5 rounded-2xl shadow-silver-glow hover:scale-[1.02] active:scale-[0.98] transition-all mt-6 text-base tracking-[0.1em] uppercase">
-              Manifest Task
-            </button>
+            <div className="pt-2">
+              <button type="submit" className="w-full metallic-silver-gradient text-on-primary font-bold py-4 md:py-5 rounded-xl md:rounded-2xl shadow-silver-glow hover:scale-[1.02] active:scale-[0.98] transition-all text-sm md:text-base tracking-[0.1em] uppercase">
+                Manifest Task
+              </button>
+            </div>
           </form>
         </div>
       </div>
