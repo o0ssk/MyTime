@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useTasks } from '../context/TaskContext';
 
 export default function OrbitalClock() {
-  const { tasks } = useTasks();
+  const { tasks, getIsCompleted } = useTasks();
   const [time, setTime] = useState(new Date());
 
   useEffect(() => {
@@ -37,6 +37,10 @@ export default function OrbitalClock() {
     
     const durationH = endH - startH;
     
+    // Check if current time is within this arc (for 12h clock visualization)
+    const currentH = (time.getHours() % 12) + time.getMinutes() / 60;
+    const isActive = currentH >= startH && currentH < endH;
+    
     const C = 2 * Math.PI * radius;
     // Add a tiny gap between tasks by subtracting a small amount from L
     const L = Math.max(0, (durationH / 12) * C - 2); 
@@ -45,7 +49,8 @@ export default function OrbitalClock() {
     
     return {
       strokeDasharray: `${L} ${C}`,
-      strokeDashoffset
+      strokeDashoffset,
+      isActive
     };
   };
 
@@ -87,9 +92,9 @@ export default function OrbitalClock() {
           {/* Task Arcs */}
           <svg className="absolute inset-0 w-full h-full -rotate-90" viewBox="0 0 100 100">
             {tasks.map(task => {
-              if (task.status === 'completed') return null;
-              const isActive = task.status === 'in-progress';
-              const props = getArcProps(task.startTime, task.endTime);
+              if (getIsCompleted(task.id)) return null;
+              const arcProps = getArcProps(task.startTime, task.endTime);
+              const { isActive, ...props } = arcProps;
               
               return (
                 <circle 
