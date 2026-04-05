@@ -30,7 +30,8 @@ export default function Clock3D() {
   React.useEffect(() => {
     setMounted(true);
     const handleResize = () => {
-      setFov(window.innerWidth < 768 ? 48 : 35);
+      // More aggressive FOV for mobile to ensure fitting
+      setFov(window.innerWidth < 768 ? 55 : 35);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -44,11 +45,12 @@ export default function Clock3D() {
           <Canvas
             shadows
             camera={{
-              position: [0, 4, 12],
+              position: [0, 5, window.innerWidth < 768 ? 16 : 12],
               fov: fov,
               near: 0.1,
               far: 100,
             }}
+            resize={{ scroll: false }}
             gl={{
               antialias: true,
               alpha: true,

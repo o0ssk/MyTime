@@ -5,6 +5,7 @@
 'use client';
 
 import { OrbitControls, Environment, ContactShadows, Html } from '@react-three/drei';
+import { useThree } from '@react-three/fiber';
 import ClockFace from './ClockFace';
 import ClockLabels from './ClockLabels';
 import ClockCenter from './ClockCenter';
@@ -135,6 +136,12 @@ function TaskArcsGroup() {
 }
 
 export default function ClockScene() {
+  const { viewport } = useThree();
+  
+  // Calculate dynamic scale to ensure the 10-unit clock fills but doesn't overflow the viewport
+  // Viewport width is in 3D units. If the clock is ~10 units wide, scaling by viewport.width/10 makes it fit.
+  const dynamicScale = Math.min(viewport.width / 9.5, 1);
+
   return (
     <>
       {/* Lighting */}
@@ -167,8 +174,8 @@ export default function ClockScene() {
       <hemisphereLight intensity={0.4} color="#f8fafc" groundColor="#0f172a" />
       {/* <Environment preset="night" /> */}
 
-      {/* The Ethereal Observer: Centered Focus */}
-      <group position={[0, 0, 0]}>
+      {/* The Ethereal Observer: Centered Focus with Responsive Scaling */}
+      <group position={[0, 0, 0]} scale={dynamicScale}>
         {/* Clock face (body + bezel) */}
         <ClockFace />
 
