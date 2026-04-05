@@ -8,7 +8,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useClockStore } from '@/store/useClockStore';
 import {
-  parseTimeInput,
   toTimeInputValue,
   TASK_COLORS,
 } from '@/lib/timeUtils';
@@ -30,8 +29,8 @@ export default function TaskDialog() {
     if (editingTask) {
       setTitle(editingTask.title);
       setDescription(editingTask.description);
-      setStartTime(toTimeInputValue(editingTask.startTime));
-      setEndTime(toTimeInputValue(editingTask.endTime));
+      setStartTime(editingTask.startTime);
+      setEndTime(editingTask.endTime);
       setSelectedColor(editingTask.color);
     } else {
       setTitle('');
@@ -49,19 +48,18 @@ export default function TaskDialog() {
     e.preventDefault();
     if (!title.trim()) return;
 
-    const start = parseTimeInput(startTime);
-    const end = parseTimeInput(endTime);
+
 
     if (editingTask) {
       updateTask(editingTask.id, {
         title: title.trim(),
         description: description.trim(),
-        startTime: start,
-        endTime: end,
+        startTime: startTime,
+        endTime: endTime,
         color: selectedColor,
       });
     } else {
-      addTask(title.trim(), description.trim(), start, end);
+      addTask(title.trim(), description.trim(), startTime, endTime);
     }
     closeDialog();
   };

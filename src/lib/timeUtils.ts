@@ -124,3 +124,50 @@ export function generateId(): string {
 export function getNextColor(existingCount: number): string {
   return TASK_COLORS[existingCount % TASK_COLORS.length];
 }
+/**
+ * Splitting logic for 24h tasks to fit onto 12h dual-rings.
+ * Handles tasks crossing 12:00 (mid-day) or 00:00 (midnight).
+ */
+export interface ArcSegment {
+  start: number;
+  end: number;
+  period: 'AM' | 'PM';
+}
+
+export function splitTaskByPeriod(start: number, end: number): ArcSegment[] {
+  const segments: ArcSegment[] = [];
+
+  // Normalize end time to handle overnight tasks (e.g., 23:00 to 01:00 is 23:00 to 25:00)
+  let normalizedEnd = end;
+  if (end < start) {
+    normalizedEnd += 24;
+  }
+
+  // We need to check for crossings at 12:00, 24:00, 36:00, etc.
+  let current = start;
+
+  while (current < normalizedEnd) {
+    const periodStart = current;
+    const currentHourMod24 = current % 24;
+    const isAM = currentHourMod24 < 12;
+
+    // Next boundary is either the next 12:00 or next 00:00
+    // If we are at 10:00 (AM), next boundary is 12:00
+    // If we are at 14:00 (PM), next boundary is 24:00
+    const nextBoundary = isAM 
+      ? Math.floor(current / 12) * 12 + 12 
+      : Math.floor(current / 12) * 12 + 12;
+
+    const periodEnd = Math.min(normalizedEnd, nextBoundary);
+
+    segments.push({
+      start: periodStart % 24,
+      end: periodEnd % 24 === 0 && periodEnd !== 0 ? 24 : periodEnd % 24,
+      period: isAM ? 'AM' : 'PM',
+    });
+
+    current = periodEnd;
+  }
+
+  return segments;
+}

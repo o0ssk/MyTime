@@ -6,13 +6,19 @@
 import React, { useState, useEffect } from 'react';
 import { useTasks } from '../context/TaskContext';
 
-export default function TaskSidebar({ onAddTask }: { onAddTask: () => void }) {
+export default function TaskSidebar({ 
+  onAddTask, 
+  isMobile, 
+  onClose 
+}: { 
+  onAddTask: () => void, 
+  isMobile?: boolean, 
+  onClose?: () => void 
+}) {
   const { tasks, toggleTaskCompletion, getIsCompleted, deleteTask, clearAllCompletions } = useTasks();
   const [mounted, setMounted] = useState(false);
   const [now, setNow] = useState<Date | null>(null);
   const [isArchiveOpen, setIsArchiveOpen] = useState(false);
-
-  const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -58,28 +64,29 @@ export default function TaskSidebar({ onAddTask }: { onAddTask: () => void }) {
 
   return (
     <section 
-      className={`
-        fixed lg:relative bottom-0 left-0 w-full lg:w-[26rem] 
-        ${isMobileExpanded ? 'h-[85vh]' : 'h-[120px]'} lg:h-full 
-        glass-celestial border-t border-outline-variant lg:border-t-0 lg:border-l 
-        p-4 md:p-6 lg:p-8 overflow-hidden z-40 flex flex-col shadow-celestial
-        transition-all duration-700 ease-out lg:translate-y-0
-      `}
+      className={`h-full w-full relative glass-celestial p-4 md:p-6 lg:p-8 overflow-hidden flex flex-col shadow-celestial transition-all duration-500 ${isMobile ? 'border-none' : 'border-l border-outline-variant'}`}
     >
-      {/* Mobile Pull Tab */}
-      <button 
-        onClick={() => setIsMobileExpanded(!isMobileExpanded)}
-        className="lg:hidden flex flex-col items-center justify-center w-full pb-4 -mt-2 group"
-      >
-        <div className="w-12 h-1 rounded-full bg-on-surface-variant/20 hover:bg-on-surface-variant/40 transition-colors"></div>
-        <div className="mt-2 text-[10px] text-on-surface-variant/40 uppercase tracking-[0.2em] font-label group-hover:text-primary transition-colors">
-          {isMobileExpanded ? 'Glide Down' : 'Daily Orbit • Arcs'}
+      {/* Mobile Bottom Sheet Handle */}
+      {isMobile && (
+        <div className="w-full flex justify-center mb-6 shrink-0">
+          <div 
+            className="w-16 h-1.5 bg-silver-300/30 rounded-full cursor-pointer hover:bg-silver-300/50 transition-colors shadow-inner"
+            onClick={onClose}
+          />
         </div>
-      </button>
+      )}
 
       <div className="flex items-center justify-between mb-6 md:mb-10 shrink-0">
         <h3 className="text-xl md:text-headline-md text-on-surface tracking-tight">Daily Orbit</h3>
         <div className="flex items-center space-x-1 md:space-x-2">
+          {isMobile && (
+            <button 
+              onClick={onClose}
+              className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/5 text-on-surface-variant transition-colors"
+            >
+              <span className="material-symbols-outlined text-[24px]">expand_more</span>
+            </button>
+          )}
            <button 
             onClick={(e) => {
               e.stopPropagation();
@@ -199,7 +206,7 @@ export default function TaskSidebar({ onAddTask }: { onAddTask: () => void }) {
       </div>
 
       {/* Floating Action Component */}
-      <div className={`absolute bottom-6 md:bottom-10 right-6 md:right-10 flex flex-col items-center space-y-4 ${isMobileExpanded ? 'opacity-100' : 'opacity-0 lg:opacity-100'} transition-opacity duration-500`}>
+      <div className="absolute bottom-6 md:bottom-10 right-6 md:right-10 flex flex-col items-center space-y-4 transition-opacity duration-500">
         <button onClick={onAddTask} className="w-14 h-14 md:w-16 md:h-16 rounded-full metallic-silver-gradient text-on-primary shadow-silver-glow flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
           <span className="material-symbols-outlined text-2xl md:text-3xl group-hover:rotate-90 transition-transform duration-500" style={{ fontVariationSettings: "'FILL' 1" }}>add</span>
         </button>

@@ -3,8 +3,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-'use client';
-
 import React from 'react';
 
 export default function SideNav({ 
@@ -18,17 +16,7 @@ export default function SideNav({
 }) {
   return (
     <>
-      {/* Mobile Backdrop */}
-      <div 
-        className={`fixed inset-0 bg-black/60 backdrop-blur-sm z-[70] transition-opacity duration-500 lg:hidden ${
-          isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        }`}
-        onClick={onClose}
-      />
-
-      <aside className={`fixed left-0 top-0 h-full flex flex-col py-12 px-6 z-[80] glass-celestial w-72 rounded-r-xl border-none shadow-celestial font-body transition-transform duration-500 ease-celestial-in-out ${
-        isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-      }`}>
+      <aside className={`h-full w-full flex flex-col py-12 px-6 glass-celestial rounded-r-xl border-none shadow-celestial font-body transition-all duration-500`}>
         <button 
           onClick={onClose}
           className="lg:hidden absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 rounded-full transition-all"

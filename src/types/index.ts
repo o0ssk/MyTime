@@ -6,11 +6,11 @@ export interface Task {
   id: string;
   title: string;
   description: string;
-  startTime: number;   // 0–24 decimal hours (e.g., 9.5 = 9:30 AM)
-  endTime: number;     // 0–24 decimal hours
+  startTime: string;   // "HH:mm" format
+  endTime: string;     // "HH:mm" format
   color: string;       // hex color from palette
-  isCompleted: boolean;
-  completedAt: string | null;
+  isCompleted?: boolean;
+  completedAt?: string | null;
 }
 
 export interface CompletionStats {

@@ -16,14 +16,12 @@ interface TaskArcProps {
   color: string;
   isCompleted: boolean;
   isHovered: boolean;
+  radius: number;
+  y: number;
   onPointerOver: () => void;
   onPointerOut: () => void;
   onClick: () => void;
 }
-
-const ARC_INNER_RADIUS = 3.38;
-const ARC_OUTER_RADIUS = 3.56;
-const ARC_Y = 0.07;
 
 export default function TaskArc({
   taskId,
@@ -32,6 +30,8 @@ export default function TaskArc({
   color,
   isCompleted,
   isHovered,
+  radius,
+  y,
   onPointerOver,
   onPointerOut,
   onClick,
@@ -56,20 +56,15 @@ export default function TaskArc({
     );
 
     // Hover scale (Ethereal Pulse)
-    const targetScale = isHovered ? 1.08 : 1;
-    meshRef.current.scale.x = THREE.MathUtils.lerp(
+    const targetScale = isHovered ? 1.05 : 1;
+    meshRef.current.scale.setScalar(THREE.MathUtils.lerp(
       meshRef.current.scale.x,
       targetScale,
       delta * 4
-    );
-    meshRef.current.scale.z = THREE.MathUtils.lerp(
-      meshRef.current.scale.z,
-      targetScale,
-      delta * 4
-    );
+    ));
 
     // Hover lift (Gravitational Field)
-    const targetY = isHovered ? ARC_Y + 0.15 : ARC_Y;
+    const targetY = isHovered ? y + 0.1 : y;
     meshRef.current.position.y = THREE.MathUtils.lerp(
       meshRef.current.position.y,
       targetY,
@@ -82,39 +77,35 @@ export default function TaskArc({
     const animatedSweep = sweep * Math.min(animProgress, 1);
     if (animatedSweep < 0.01) return null;
 
-    // Use a TubeGeometry-like approach with extruded rounded shape
-    const path: THREE.Vector3[] = [];
     const segments = 64;
-    const midRadius = (ARC_INNER_RADIUS + ARC_OUTER_RADIUS) / 2;
+    const path: THREE.Vector3[] = [];
 
     for (let i = 0; i <= segments; i++) {
       const t = i / segments;
       const a = startAngle - animatedSweep * t;
       path.push(new THREE.Vector3(
-        Math.cos(a) * midRadius,
+        Math.cos(a) * radius,
         0,
-        -Math.sin(a) * midRadius
+        -Math.sin(a) * radius
       ));
     }
 
-    // Create tube along the arc path
     const curve = new THREE.CatmullRomCurve3(path, false, 'catmullrom', 0);
-    const tubeRadius = (ARC_OUTER_RADIUS - ARC_INNER_RADIUS) / 2;
+    // Fixed thickness for orbit arcs
+    const tubeRadius = 0.04;
     const geom = new THREE.TubeGeometry(curve, segments, tubeRadius, 8, false);
     return geom;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [startTime, endTime, animProgress]);
+  }, [startTime, endTime, animProgress, radius]);
 
   if (!geometry) return null;
 
-    const displayColor = isCompleted ? '#475569' : color;
-    const opacity = isCompleted ? 0.25 : 0.85;
+  const displayColor = isCompleted ? '#475569' : color;
 
   return (
     <mesh
       ref={meshRef}
       geometry={geometry}
-      position={[0, ARC_Y, 0]}
+      position={[0, y, 0]}
       castShadow
       onPointerOver={(e) => {
         e.stopPropagation();
@@ -131,7 +122,7 @@ export default function TaskArc({
         onClick();
       }}
     >
-        <meshStandardMaterial
+      <meshStandardMaterial
         color={displayColor}
         emissive={displayColor}
         emissiveIntensity={isHovered ? 0.8 : 0.2} 

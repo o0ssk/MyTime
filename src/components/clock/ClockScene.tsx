@@ -11,7 +11,7 @@ import ClockCenter from './ClockCenter';
 import ClockHands from './ClockHands';
 import TaskArc from './TaskArc';
 import { useTasks } from '@/app/context/TaskContext';
-import { formatTime, getTaskDuration, parseTimeInput } from '@/lib/timeUtils';
+import { formatTime, getTaskDuration, parseTimeInput, splitTaskByPeriod } from '@/lib/timeUtils';
 
 function TaskArcTooltip() {
   const { tasks, hoveredTaskId, getIsCompleted } = useTasks();
@@ -24,7 +24,7 @@ function TaskArcTooltip() {
   const start = parseTimeInput(task.startTime);
   const end = parseTimeInput(task.endTime);
 
-  // Position tooltip at the midpoint of the arc
+  // Position tooltip at the midpoint of the arc (original 24h span)
   const midTime =
     start < end
       ? (start + end) / 2
@@ -33,15 +33,18 @@ function TaskArcTooltip() {
   const hour12 = ((midTime % 12) + 12) % 12;
   const fraction = hour12 / 12;
   const angle = Math.PI / 2 - fraction * Math.PI * 2;
-  const radius = 3.47;
-  const x = Math.cos(angle) * radius;
-  const z = -Math.sin(angle) * radius;
+  
+  // Decide tooltip radius based on whether the midpoint is AM or PM
+  const isAM = midTime < 12 || midTime >= 24;
+  const radius = isAM ? 3.55 : 3.80;
+  const x = Math.cos(angle) * (radius + 0.1); // Offset slightly for visibility
+  const z = -Math.sin(angle) * (radius + 0.1);
 
   const duration = getTaskDuration(start, end);
 
   return (
     <Html
-      position={[x, 0.8, z]}
+      position={[x, 0.6, z]} // Lowered slightly
       center
       style={{ pointerEvents: 'none', transition: 'opacity 0.2s ease' }}
     >
@@ -49,7 +52,7 @@ function TaskArcTooltip() {
         style={{
           background: 'rgba(10, 10, 15, 0.95)',
           backdropFilter: 'blur(16px)',
-          border: `1px solid ${task.color}44`,
+          border: `1px solid ${task.color}AA`,
           borderRadius: '12px',
           padding: '12px 18px',
           color: '#fafafa',
@@ -85,20 +88,6 @@ function TaskArcTooltip() {
         <div style={{ color: '#a1a1aa', fontSize: 11 }}>
           {formatTime(start)} — {formatTime(end)} · {duration.toFixed(1)}h
         </div>
-        {task.description && (
-          <div
-            style={{
-              color: '#71717a',
-              fontSize: 10,
-              marginTop: 4,
-              maxWidth: '200px',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-            }}
-          >
-            {task.description}
-          </div>
-        )}
       </div>
     </Html>
   );
@@ -107,20 +96,38 @@ function TaskArcTooltip() {
 function TaskArcsGroup() {
   const { tasks, hoveredTaskId, setHoveredTaskId, getIsCompleted } = useTasks();
 
+  // Create segments for all tasks
+  const arcSegments = tasks.flatMap((task) => {
+    const start = parseTimeInput(task.startTime);
+    const end = parseTimeInput(task.endTime);
+    
+    return splitTaskByPeriod(start, end).map((segment, idx) => ({
+      ...segment,
+      taskId: task.id,
+      color: task.color,
+      isCompleted: getIsCompleted(task.id),
+      key: `${task.id}-${segment.period}-${idx}`
+    }));
+  });
+
   return (
     <group>
-      {tasks.map((task) => (
+      {arcSegments.map((seg) => (
         <TaskArc
-          key={task.id}
-          taskId={task.id}
-          startTime={parseTimeInput(task.startTime)}
-          endTime={parseTimeInput(task.endTime)}
-          color={task.color}
-          isCompleted={getIsCompleted(task.id)}
-          isHovered={hoveredTaskId === task.id}
-          onPointerOver={() => setHoveredTaskId(task.id)}
+          key={seg.key}
+          taskId={seg.taskId}
+          startTime={seg.start}
+          endTime={seg.end}
+          color={seg.color}
+          isCompleted={seg.isCompleted}
+          isHovered={hoveredTaskId === seg.taskId}
+          // AM = Inner (3.55), PM = Outer (3.80)
+          radius={seg.period === 'AM' ? 3.55 : 3.80}
+          // AM = Higher (0.12), PM = Lower (0.08)
+          y={seg.period === 'AM' ? 0.12 : 0.08}
+          onPointerOver={() => setHoveredTaskId(seg.taskId)}
           onPointerOut={() => setHoveredTaskId(null)}
-          onClick={() => {}} // Not hooked for now
+          onClick={() => {}}
         />
       ))}
     </group>

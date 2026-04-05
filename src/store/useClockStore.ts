@@ -6,7 +6,7 @@
 
 import { create } from 'zustand';
 import { Task, CompletionStats, TaskFilter } from '@/types';
-import { generateId, getNextColor, getTaskDuration } from '@/lib/timeUtils';
+import { generateId, getNextColor, getTaskDuration, parseTimeInput } from '@/lib/timeUtils';
 import { saveTasks, loadTasks, getTodayString } from '@/lib/storage';
 
 interface ClockState {
@@ -22,7 +22,7 @@ interface ClockState {
   completionStats: CompletionStats;
 
   // Actions
-  addTask: (title: string, description: string, startTime: number, endTime: number) => void;
+  addTask: (title: string, description: string, startTime: string, endTime: string) => void;
   updateTask: (taskId: string, updates: Partial<Pick<Task, 'title' | 'description' | 'startTime' | 'endTime' | 'color'>>) => void;
   deleteTask: (taskId: string) => void;
   toggleTaskComplete: (taskId: string) => void;
@@ -41,7 +41,7 @@ function computeStats(tasks: Task[]): CompletionStats {
   let completedHours = 0;
 
   tasks.forEach((t) => {
-    const duration = getTaskDuration(t.startTime, t.endTime);
+    const duration = getTaskDuration(parseTimeInput(t.startTime), parseTimeInput(t.endTime));
     totalHours += duration;
     if (t.isCompleted) completedHours += duration;
   });
