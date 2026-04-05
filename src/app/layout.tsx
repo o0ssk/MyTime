@@ -40,11 +40,11 @@ export default function RootLayout({
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              if ('serviceWorker' in navigator) {
+              if (window.location.hostname !== 'localhost' && 'serviceWorker' in navigator) {
                 window.addEventListener('load', function() {
                   navigator.serviceWorker.register('/sw.js').then(function(registration) {
                     console.log('SW registered');
-                  }, function(err) {
+                  }).catch(function(err) {
                     console.log('SW registration failed: ', err);
                   });
                 });
