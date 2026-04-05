@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Task } from '@/types';
 import { useClockStore } from '@/store/useClockStore';
-import { formatTime, getTaskDuration } from '@/lib/timeUtils';
+import { formatTime, getTaskDuration, parseTimeInput } from '@/lib/timeUtils';
 import { CheckCircle2, Circle, Edit2, Trash2 } from 'lucide-react';
 
 interface TaskItemProps {
@@ -33,7 +33,11 @@ export default function TaskItem({ task }: TaskItemProps) {
     return () => clearInterval(t);
   }, []);
 
-  const isActive = !task.isCompleted && now >= task.startTime && now <= task.endTime;
+  const start = parseTimeInput(task.startTime);
+  const end = parseTimeInput(task.endTime);
+
+  const isActive = !task.isCompleted && 
+    (end >= start ? (now >= start && now <= end) : (now >= start || now <= end));
 
   return (
     <motion.div
@@ -73,7 +77,7 @@ export default function TaskItem({ task }: TaskItemProps) {
       <div className="flex items-center justify-between mt-auto">
         <div className="flex items-center text-on-surface-muted text-xs font-inter gap-2">
           <span className="material-symbols-outlined text-sm">schedule</span>
-          {formatTime(task.startTime)} — {formatTime(task.endTime)}
+          {formatTime(parseTimeInput(task.startTime))} — {formatTime(parseTimeInput(task.endTime))}
         </div>
 
         {!isActive && !task.isCompleted && (

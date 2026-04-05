@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="manifest" href="/manifest.json" />
         <meta name="theme-color" content="#0c1324" />
@@ -53,7 +53,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={`${inter.variable} ${manrope.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} ${manrope.variable} antialiased`} suppressHydrationWarning>{children}</body>
     </html>
   );
 }

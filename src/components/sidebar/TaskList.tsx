@@ -6,6 +6,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion';
 import { useClockStore } from '@/store/useClockStore';
+import { parseTimeInput } from '@/lib/timeUtils';
 import TaskItem from './TaskItem';
 
 export default function TaskList() {
@@ -21,7 +22,7 @@ export default function TaskList() {
 
   // Sort by start time
   const sortedTasks = [...filteredTasks].sort(
-    (a, b) => a.startTime - b.startTime
+    (a, b) => parseTimeInput(a.startTime) - parseTimeInput(b.startTime)
   );
 
   return (
