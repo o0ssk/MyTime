@@ -64,7 +64,7 @@ export default function TaskSidebar({
 
   return (
     <section 
-      className={`h-full w-full relative glass-celestial p-4 md:p-6 lg:p-8 overflow-hidden flex flex-col shadow-celestial transition-all duration-500 ${isMobile ? 'border-none' : 'border-l border-outline-variant'}`}
+      className={`h-full w-full relative backdrop-blur-3xl bg-slate-900/60 p-4 md:p-6 lg:p-8 overflow-hidden flex flex-col shadow-celestial transition-all duration-500 ${isMobile ? 'border-none' : 'border-l border-outline-variant rounded-l-[3rem]'}`}
     >
       {/* Mobile Bottom Sheet Handle */}
       {isMobile && (

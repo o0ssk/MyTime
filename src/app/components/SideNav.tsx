@@ -16,7 +16,7 @@ export default function SideNav({
 }) {
   return (
     <>
-      <aside className={`h-full w-full flex flex-col py-12 px-6 glass-celestial rounded-r-xl border-none shadow-celestial font-body transition-all duration-500`}>
+      <aside className={`h-full w-full flex flex-col py-12 px-6 backdrop-blur-3xl bg-slate-900/60 rounded-r-[3rem] border-none shadow-celestial font-body transition-all duration-500`}>
         <button 
           onClick={onClose}
           className="lg:hidden absolute top-6 right-6 w-10 h-10 flex items-center justify-center text-on-surface-variant hover:bg-white/5 rounded-full transition-all"

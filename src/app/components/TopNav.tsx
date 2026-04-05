@@ -10,7 +10,7 @@ export default function TopNav() {
   const { toggleLeftSidebar, toggleRightSidebar } = useUIStore();
 
   return (
-    <nav className="fixed top-0 left-0 w-full z-[60] flex h-16 md:h-20 shrink-0 items-center justify-between gap-4 glass-celestial px-4 md:px-10 shadow-celestial backdrop-blur-xl">
+    <nav className="absolute top-0 left-0 w-full z-[60] flex h-16 md:h-20 shrink-0 items-center justify-between gap-4 px-4 md:px-10 shadow-celestial backdrop-blur-3xl bg-slate-900/60 border-b border-white/5 transition-all duration-500">
       <div className="flex items-center space-x-4">
         <button 
           onClick={toggleLeftSidebar}
